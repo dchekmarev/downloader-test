@@ -2,6 +2,7 @@ package com.dchekmarev.test.downloader;
 
 import com.dchekmarev.test.downloader.providers.FileStreamProvider;
 import com.dchekmarev.test.downloader.providers.URLStreamProvider;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -21,14 +22,37 @@ public class CLI {
 	private int concurrency = Runtime.getRuntime().availableProcessors();
 
 	@Argument(usage = "list of urls to download", required = true, metaVar = "URL(s)")
-	private List<String> urls = null;
-
+	private List<String> urls = new ArrayList<>();
 
 	public static void main(String[] args) {
-		new CLI().doMain(args);
+		CLI cli = new CLI();
+		if (cli.processCmdLine(args)) {
+			cli.doMain();
+		}
 	}
 
-	public void doMain(String[] args) {
+	private void doMain() {
+		Reporter reporter = new StdErrReporter();
+
+		ProviderResolver resolver = new ProviderResolver(asList(
+			new FileStreamProvider(),
+			new URLStreamProvider()
+		), reporter);
+
+		ExecutorService es = Executors.newFixedThreadPool(concurrency);
+
+		new Downloader(resolver, es, savePath, reporter).download(urls);
+
+		es.shutdown();
+		try {
+			es.awaitTermination(1, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
+		}
+		es.shutdownNow();
+	}
+
+	private boolean processCmdLine(String[] args) {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
@@ -41,25 +65,8 @@ public class CLI {
 			System.err.println();
 
 			System.err.println("Example: java -jar " + jarName + parser.printExample(OptionHandlerFilter.PUBLIC) + " URL1 URL2 ...");
-			return;
+			return false;
 		}
-
-		Reporter reporter = new StdErrReporter();
-
-		ProviderResolver resolver = new ProviderResolver(asList(
-			new FileStreamProvider(),
-			new URLStreamProvider()
-		), reporter);
-		ExecutorService es = Executors.newFixedThreadPool(concurrency);
-
-		new Downloader(resolver, es, savePath, reporter).download(urls);
-
-		es.shutdown();
-		try {
-			es.awaitTermination(1, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			System.err.println(e.getMessage());
-		}
-		es.shutdownNow();
+		return true;
 	}
 }
