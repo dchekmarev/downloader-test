@@ -32,7 +32,7 @@ public class TestCommons {
 
 		@Override
 		public NamedInputStream getStream(String url) throws IOException {
-			return new NamedInputStream(url, stream);
+			return new NamedInputStream(url, () -> stream);
 		}
 
 		@Override

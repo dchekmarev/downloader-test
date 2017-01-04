@@ -1,21 +1,22 @@
 package com.dchekmarev.test.downloader;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class NamedInputStream {
 	private final String name;
-	private final InputStream stream;
+	private final StreamSupplier inputStreamSupplier;
 
-	public NamedInputStream(String name, InputStream stream) {
+	public NamedInputStream(String name, StreamSupplier inputStreamSupplier) {
 		this.name = name;
-		this.stream = stream;
+		this.inputStreamSupplier = inputStreamSupplier;
 	}
 
 	public String getName() {
 		return name.substring(Math.max(0, name.lastIndexOf("/") + 1));
 	}
 
-	public InputStream getStream() {
-		return stream;
+	public InputStream getStream() throws IOException {
+		return inputStreamSupplier.get();
 	}
 }

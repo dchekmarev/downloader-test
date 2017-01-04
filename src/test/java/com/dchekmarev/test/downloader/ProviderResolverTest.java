@@ -48,28 +48,28 @@ public class ProviderResolverTest extends TestCommons {
 	}
 
 	@Test
-	public void testManyFirstMatch() {
+	public void testManyFirstMatch() throws IOException {
 		TestProviderResolver resolver = getTestManyProvider();
 		resolver.providers.get(0).supports(true);
 		assertSame(EMPTY_STREAM1, resolver.getNamedInputStream("test").getStream());
 	}
 
 	@Test
-	public void testManySecondMatch() {
+	public void testManySecondMatch() throws IOException {
 		TestProviderResolver resolver = getTestManyProvider();
 		resolver.providers.get(1).supports(true);
 		assertSame(EMPTY_STREAM2, resolver.getNamedInputStream("test").getStream());
 	}
 
 	@Test
-	public void testManyThirdMatch() {
+	public void testManyThirdMatch() throws IOException {
 		TestProviderResolver resolver = getTestManyProvider();
 		resolver.providers.get(2).supports(true);
 		assertSame(EMPTY_STREAM3, resolver.getNamedInputStream("test").getStream());
 	}
 
 	@Test
-	public void testManyAllMatchTakeFirst() {
+	public void testManyAllMatchTakeFirst() throws IOException {
 		TestProviderResolver resolver = getTestManyProvider();
 		resolver.providers.get(0).supports(true);
 		resolver.providers.get(1).supports(true);
@@ -78,7 +78,7 @@ public class ProviderResolverTest extends TestCommons {
 	}
 
 	@Test
-	public void testManyTwoThreeMatchTakeFirst() {
+	public void testManyTwoThreeMatchTakeFirst() throws IOException {
 		TestProviderResolver resolver = getTestManyProvider();
 		resolver.providers.get(1).supports(true);
 		resolver.providers.get(2).supports(true);

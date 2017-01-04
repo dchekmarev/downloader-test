@@ -8,7 +8,7 @@ import java.net.URL;
 public class URLStreamProvider implements StreamProvider {
 	@Override
 	public NamedInputStream getStream(String url) throws IOException {
-		return new NamedInputStream(url, new URL(url).openStream());
+		return new NamedInputStream(url, () -> new URL(url).openStream());
 	}
 
 	@Override
