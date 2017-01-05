@@ -1,6 +1,7 @@
 package com.dchekmarev.test.downloader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,8 +25,8 @@ public class StreamSaveTask implements Runnable {
 	@Override
 	public void run() {
 		Path target = Paths.get(targetPath, namedStream.getName());
-		try {
-			Files.copy(namedStream.getStream(), target, StandardCopyOption.REPLACE_EXISTING);
+		try (InputStream source = namedStream.getStream()) {
+			Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			reporter.copyIOException(namedStream.getName(), e);
 			try {
